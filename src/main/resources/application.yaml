@@ -6,11 +6,8 @@ spring:
     name: ms-books-catalogue
 
 eureka:
-  instance:
-    instance-id: ${spring.application.name}:${random.uuid}
   client:
-    service-url:
-      defaultZone: http://eureka-server:8761/eureka
+    enabled: false
 
 management:
   endpoints:
