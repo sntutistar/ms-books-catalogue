@@ -14,5 +14,15 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  cloud:
+    discovery:
+      enabled: false
+
   application:
     name: ms-books-catalogue
+
+eureka:
+  client:
+    enabled: false
+    register-wiyh-eureka: false
+    fetch-registry: false
