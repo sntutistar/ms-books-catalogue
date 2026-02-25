@@ -1,7 +1,7 @@
 package com.relato.msbookscatalogue.controller;
 
-import com.relato.msbookscatalogue.search.BookDocument;
-import com.relato.msbookscatalogue.repository.BookSearchRepository;
+import com.relato.msbookscatalogue.model.Book;
+import com.relato.msbookscatalogue.repository.BookRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,29 +10,34 @@ import java.util.List;
 @RequestMapping("/books")
 public class BookController {
 
-    private final BookSearchRepository repository;
+    private final BookRepository repository;
 
-    public BookController(BookSearchRepository repository) {
+    public BookController(BookRepository repository) {
         this.repository = repository;
     }
 
     @GetMapping
-    public Iterable<BookDocument> getAll() {
-        return repository.findAll();
+    public List<Book> getAll() {
+        return repository.findAll()
+                .stream()
+                .filter(book -> !book.getDeleted())
+                .toList();
     }
 
     @PostMapping
-    public BookDocument create(@RequestBody BookDocument book) {
+    public Book create(@RequestBody Book book) {
         return repository.save(book);
     }
 
     @GetMapping("/search")
-    public List<BookDocument> search(@RequestParam String query) {
-        return repository.findByTitleContainingOrAuthorContaining(query, query);
+    public List<Book> search(@RequestParam String query) {
+        return repository
+                .findByTitleContainingIgnoreCaseAndDeletedFalseOrAuthorContainingIgnoreCaseAndDeletedFalse(
+                        query, query);
     }
 
     @GetMapping("/facet")
-    public List<BookDocument> facetByCategory(@RequestParam String category) {
-        return repository.findByCategory(category);
+    public List<Book> facetByCategory(@RequestParam String category) {
+        return repository.findByCategoryAndDeletedFalse(category);
     }
 }
